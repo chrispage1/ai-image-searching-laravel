@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('url');
 
             $table->longText('description')->nullable();
+            $table->boolean('ai_analysed')->default(false);
 
             $table->timestamps();
         });

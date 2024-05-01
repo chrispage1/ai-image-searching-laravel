@@ -14,6 +14,10 @@ class Media extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'ai_analysed' => 'boolean',
+    ];
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);

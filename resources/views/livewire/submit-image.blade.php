@@ -1,7 +1,7 @@
 <div>
 
-    <form class="flex flex-col m-6 w-1/3" wire:submit="submit">
-        <h4 class="text-lg font-semibold">Submit URL for analysis</h4>
+    <form class="flex flex-col m-6 w-1/2" wire:submit="submit">
+        <h4 class="text-lg font-semibold mb-2">Submit URL for analysis</h4>
 
         @if($this->message)
         <div class="bg-green-100 text-sm p-3 rounded-lg leading-none py-3 mb-2">

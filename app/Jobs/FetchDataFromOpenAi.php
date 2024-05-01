@@ -13,7 +13,7 @@ class FetchDataFromOpenAi implements ShouldQueue
 {
     use Queueable;
 
-    private string $prompt = 'You are designed to analyse and return a JSON payload with: - person_count - the number of people found in the image, weather - 1/2 word summary of the weather conditions, activity_type - motorcycle or car, brands - array of recognised brands, description - summary of the image (max 200 chars)';
+    private string $prompt = 'You are designed to analyse and return a JSON payload with: - person_count - the number of people found in the image, weather - 1/2 word summary of the weather conditions, activity_type - motorcycle or car, brands - array of recognised brands, tags - array of stand out details, description - max 200 chars, sport - the sport name';
 
     public function __construct(public int $mediaId)
     {
@@ -38,7 +38,7 @@ class FetchDataFromOpenAi implements ShouldQueue
                             [
                                 'type' => 'text',
                                 'text' => $this->prompt,
-                            ]
+                            ],
                         ]
                     ],
                     [
@@ -61,10 +61,14 @@ class FetchDataFromOpenAi implements ShouldQueue
             $json = json_decode($response->json('choices.0.message.content'));
 
             Model::withoutEvents(function () use ($media, $json) {
-                $media->forceFill(['description' => $json->description])->save();
+                $media->forceFill([
+                    'ai_analysed' => true,
+                    'description' => $json->description
+                ])->save();
 
                 $media->tags()->sync(
-                    collect($json->brands)
+                    collect([...$json->brands, ...$json->tags, $json->sport])
+                        ->filter()
                         ->map(fn (string $tag) => Tag::firstOrCreate(['name' => strtolower($tag)]))
                         ->pluck('id')
                 );
